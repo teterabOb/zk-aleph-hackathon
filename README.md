@@ -20,6 +20,6 @@ snarkjs groth16 setup balance.r1cs pot12_final.ptau balance_0000.zkey
 
 ## Contrato
 
-| *Contrato*       | *Dirección*                                    |
+| **Contrato**       | **Dirección**                                    |
 |----------------|----------------------------------------------|
 | `verifier.sol`      | `0x1b8f823ed41Bd01851B6f9Fcc1D66517458885B5`   |

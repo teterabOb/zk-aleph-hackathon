@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>My First Web Page using ZKP</title>
+  </head>
+  <body>
+    <h1>Hello, ZKP!</h1>
+    <input id="connect_button" type="button" value="Connect" onclick="connectWallet()" style="display: none">
+    <p id="account_address" style="display: none;"></p>
+    <p id="web3_message" style="display: none;"></p>
+    <p id="contract_state" style="display: none;"></p>
+    <input type="input" value="" id="a">
+    <input type="input" value="" id="b">
+    <input type="button" value="Send Proof" onclick="_sendProof()">
+    <br>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.5/web3.min.js"></script>
+    <script type="text/javascript" src="js/blockchain_stuff.js"></script>
+    <script type="text/javascript" src="js/snarkjs.min.js"></script>
+  </body>
+  </html>
+
+  <script>
+    async function _sendProof() {
+      const a = document.getElementById('a').value;
+      const b = document.getElementById('b').value;
+      sendProof(a, b);
+      //const proof = await generateProof(a, b);
+      //const result = await verifyProof(proof);
+      //console.log(result);
+    }
+  </script>

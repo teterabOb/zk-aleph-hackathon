@@ -1,13 +1,13 @@
-const NETWORK_ID = 5777;
+const NETWORK_ID = 300;
 
-const MY_CONTRACT_ADDRESS = ""
+const MY_CONTRACT_ADDRESS = "0x1b8f823ed41Bd01851B6f9Fcc1D66517458885B5"
 const MY_CONTRACT_ABI_PATH = "./json_abi/abi.json"
 
 var my_contract
 var accounts
 var web3
 
-function metamaskReloadCallBack() {
+function metamaskReloadCallback() {
     window.ethereum.on('accountsChanged', function (accounts) {
         document.getElementById("web3_message").textContent = "Se cambió el account, realoading ..."
         window.location.reload()
@@ -104,28 +104,41 @@ const onWalletConnectedCallback = async () => {
 }
 
 const sendProof = async (a, b) => {
+    console.warn("Sending proof to contract")
     document.getElementById("web3_message").textContent = "Generating proof...";
 
-    const { proof, publicSignals } = await snarkjs.groth16.fullProve({ a: a, b: b }, "../artifacts/balance.wasm", "../artifacts/balance_0001.zkey");
+    let proofAux
+    let publicSignalsAux
+
+    try {
+        const { proof, publicSignals } = await snarkjs.groth16.fullProve({ balance: a, treshold: b }, "../artifacts/balance.wasm", "../artifacts/balance_0001.zkey");
+        proofAux = proof
+        console.log("Proof generated: ", proof)
+        publicSignalsAux = publicSignals
+        console.log("Public signals: ", publicSignals)
+    } catch (error) {
+        console.error("Error generating proof: ", error)
+    }
+
 
     const vkey = await fetch("../artifacts/verification_key.json").then(function (res) {
         return res.json();
     });
 
-    const res = await snarkjs.groth16.verify(vkey, publicSignals, proof);
+    const res = await snarkjs.groth16.verify(vkey, publicSignalsAux, proofAux);
 
     console.log("Proof verified client-side: ", res);
 
-    pA = proof.pi_a
+    pA = proofAux.pi_a
     pA.pop()
-    pB = proof.pi_b
+    pB = proofAux.pi_b
     pB.pop()
-    pC = proof.pi_c
+    pC = proofAux.pi_c
     pC.pop()
 
     document.getElementById("web3_message").textContent = "Proof generated please confirm transaction.";
 
-    const result = await my_contract.methods.verifyProof(pA, pB, pC, publicSignals)
+    const result = await my_contract.methods.verifyProof(pA, pB, pC, publicSignalsAux)
     /*
         .send({ from: accounts[0], gas: 0, value: 0 })
         .on('transactionHash', function (hash) {
